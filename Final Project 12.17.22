@@ -1,0 +1,270 @@
+import tkinter as tk
+from tkinter import ttk
+from datetime import datetime
+from pathlib import Path
+import csv
+from tkinter import *
+from PIL import Image, ImageTk 
+
+#global variables
+variables= dict()
+records_saved=0
+global sundae_image
+
+#flags
+button_flag=False
+milkshake_flag=True
+sundae_flag=True
+
+#milkshake button 
+def on_milkshake():
+    mwhip_check["state"]="active" 
+    mcherry_check["state"]="active"
+    mnuts_check["state"]="active"
+    size_combobox["state"]= "active"
+    flavor_combobox["state"]="active"
+    scoop_input["state"]="disabled" 
+    swhip_check["state"]="disabled"
+    scherry_check["state"]="disabled"
+    snuts_check["state"]="disabled"
+    sundae_button["state"]= "disabled"
+    button_flag= True 
+    sundae_flag=False 
+
+#sundae button
+def on_sundae(): 
+    scoop_input["state"]="normal" 
+    swhip_check["state"]="active"
+    scherry_check["state"]="active"
+    snuts_check["state"]="active"
+    mwhip_check["state"]="disabled"
+    mcherry_check["state"]="disabled"
+    mnuts_check["state"]="disabled"
+    size_combobox["state"]= "disabled"
+    flavor_combobox["state"]="disabled"
+    milkshake_button["state"]= "disabled"
+    button_flag=True
+    milkshake_flag=False
+
+
+#submit button 
+def on_submit():
+    name= name_ent.get() 
+    if name == "": 
+        output_text["text"]="Please enter your name" 
+    else:
+        if scoop_input["state"]=="normal": 
+            print("sundae order for: "+name) 
+            print(scoop_input.get()+ " scoops on sundae")
+            if s_whip.get()==1: 
+                print("add whip cream")
+            if s_nuts.get()==1:
+                print("add nuts")
+            if s_cherry.get()==1:
+                print("add a cherry on top")
+            root.destroy() 
+            thanks_window()
+        else: 
+            if size_var.get()=="": 
+                output_text["text"]="Please select a size"
+            if flavor_var.get()== "": 
+                output_text["text"]="Please select a flavor"
+            else:
+                print("order for: "+name)
+                print(size_var.get()+ " milkshake")
+                print(flavor_var.get())
+                if m_whip.get()==1: 
+                    print("add whip cream")
+                if m_nuts.get()==1:
+                    print("add nuts")
+                if m_cherry.get()==1:
+                    print("add a cherry on top")
+                root.destroy()
+                thanks_window()
+
+#building thank you window
+def thanks_window(): 
+    finished=tk.Tk()
+    finished.title("Ike's Homemade Ice Cream Parlor")
+    finished.geometry("400x100+300+300") 
+    finished.resizable(True, True)
+    finished.configure(background="light yellow")
+
+    #new window
+    title=tk.Label(finished, text="Ike's Homemade Ice Cream Parlor", font="Helvetica 16 bold", bg= "light blue", fg= "#FFFFFF", padx=10)
+    subtitle=tk.Label(finished, text="Thank you for your order!", font= "Arial 14", bg="white", fg= "light blue")
+    exit_button= tk.Button(finished, text= "Exit", command=finished.destroy) 
+    
+    #row 0
+    title.grid(row=0, columnspan=2, padx=15, sticky= NSEW)
+    #row 1
+    subtitle.grid(row=1, columnspan=2)
+    #row 2
+    exit_button.grid(row=2, columnspan=2)
+
+#if reset button is clicked
+def reset():
+    button_flag=False
+    milkshake_flag=True
+    sundae_flag=True
+    name_ent.delete(0, END)
+    scoop_var.set(1)
+    s_whip.set(0)
+    m_whip.set(0)
+    s_nuts.set(0)
+    m_nuts.set(0)
+    s_cherry.set(0)
+    m_cherry.set(0)
+    size_var.set("")
+    flavor_var.set("")
+
+    scoop_input["state"]="disabled"
+    swhip_check["state"]="disabled"
+    scherry_check["state"]="disabled"
+    snuts_check["state"]="disabled"
+    mwhip_check["state"]="disabled"
+    mcherry_check["state"]="disabled"
+    mnuts_check["state"]="disabled"
+    size_combobox["state"]= "disabled"
+    flavor_combobox["state"]="disabled"
+    milkshake_button["state"]="active"
+    sundae_button["state"]="active"
+    
+    
+
+#root window
+root=tk.Tk()
+root.title("Ike's Homemade Ice Cream Parlor")
+root.geometry("600x600+300+300") 
+root.resizable(False, False)
+root.configure(background="light blue")
+
+
+#frames for sundae 
+sundaewindow= tk.Frame(root, background="light yellow") 
+sundaewindow.grid(row=5, column=0)
+#frame for milkshake
+milkwindow= tk.Frame(root, background="light yellow") 
+milkwindow.grid(row=5, column=5)
+
+
+#building widgets
+#title widget
+title=tk.Label(root, text="Ike's Homemade Ice Cream Parlor", font="Arial 20 ", bg= "light yellow", fg= "Purple", padx=10)
+
+
+#building name label and text entry
+name_lbl= tk.Label(root, text="Enter the name for the order: ", bg= "purple")
+name_ent= tk.Entry(root)
+
+#sundae and milkshake buttons
+button_lbl = tk.Label(root, text="Please choose a sundae or a milkshake", bg= "purple")
+sundae_button = tk.Button(root, text= "Sundae", bg= "light blue", command= on_sundae)
+milkshake_button = tk.Button(root, text= "Milkshake", bg= "light blue", command= on_milkshake)
+
+#Sundae Photo
+sundae_image = tk.PhotoImage(file="icecreamsundae2.png")
+label = ttk.Label(root, image = sundae_image)
+
+#Milkshake Photo
+milk_image = tk.PhotoImage(file="milkshake.png")
+label = ttk.Label(root, image = milk_image)
+
+
+#sundaes
+#scoop spinbox
+scoop_label= tk.Label(sundaewindow, text= "How many scoops would you like?", bg= "light yellow")
+scoop_var=IntVar()
+scoop_input= tk.Spinbox(sundaewindow, from_=1, to = 3, increment=1, textvariable=scoop_var)
+#whipcream check box
+s_whip=tk.IntVar()
+swhip_check= tk.Checkbutton(sundaewindow, text="Whip cream", bg= "light yellow", variable= s_whip)
+#nuts check box
+s_nuts=tk.IntVar()
+snuts_check= tk.Checkbutton(sundaewindow, text="Nuts", bg= "light yellow", variable=s_nuts)
+#cherry check box
+s_cherry= IntVar()
+scherry_check= tk.Checkbutton(sundaewindow, text="Cherry on top", bg= "light yellow", variable=s_cherry)
+
+
+
+
+#milkshakes
+#size combobox
+size_values= ["small", "medium", "large"]
+variables["Size"] = tk.StringVar()
+size_label= ttk.Label(milkwindow, text="Size")
+size_var = tk.StringVar()
+size_combobox= ttk.Combobox(milkwindow, state= 'readonly', textvariable = size_var, values=size_values)
+size_label=tk.Label(milkwindow, text="What size milkshake?", bg= "light yellow")
+
+
+#flavor combobox
+flavor_values= ["vanilla", "chocolate", "strawberry"]
+variables["Flavor"] = tk.StringVar()
+flavor_label= ttk.Label(milkwindow, text="Flavor")
+flavor_var = tk.StringVar()
+flavor_combobox= ttk.Combobox(milkwindow, textvariable = flavor_var, values=flavor_values, state= "readonly")
+flavor_label=tk.Label(milkwindow, text="What flavor milkshake?", bg= "light yellow")
+
+#whipcream check box
+m_whip= IntVar()
+mwhip_check= tk.Checkbutton(milkwindow, text="Whip Cream", bg= "light yellow", variable= m_whip)
+#nuts check box
+m_nuts= IntVar()
+mnuts_check= tk.Checkbutton(milkwindow, text="Nuts", bg= "light yellow", variable= m_nuts)
+#cherry check box
+m_cherry= IntVar()
+mcherry_check = tk.Checkbutton(milkwindow, text = "Cherry on top", bg = "light yellow", variable = m_cherry)
+
+#sumbit, reset, exit buttons
+submit_button = tk.Button(root, text = "Submit Order", bg = "purple", command = on_submit)
+restart_button = tk.Button(root, text = "Restart Order", bg = "pink", command = reset)
+exit_button = tk.Button(root, text = "Exit", command = root.destroy, bg = "pink")
+
+#if left blank
+output_text = tk.Label(root, text = "!Please enter your selection!", bg = "red")
+
+if button_flag==False:
+    scoop_input["state"] = "disabled"
+    swhip_check["state"] = "disabled"
+    scherry_check["state"] = "disabled"
+    snuts_check["state"] = "disabled"
+    mwhip_check["state"] = "disabled"
+    mcherry_check["state"] = "disabled"
+    mnuts_check["state"] = "disabled"
+    size_combobox["state"] = "disabled"
+    flavor_combobox["state"] = "disabled"
+
+
+#layout for root window
+title.grid(row = 0, columnspan = 10, padx = 15, sticky = NSEW)
+name_lbl.grid(row = 2, column = 0)
+name_ent.grid(row = 2, column = 1)
+button_lbl.grid(row = 3, columnspan = 16)
+sundae_button.grid(row = 4, column = 0)
+milkshake_button.grid(row = 4, column = 5)
+
+#sundae frame
+scoop_label.grid(row = 0, column = 0)
+scoop_input.grid(row = 1, column = 0)
+swhip_check.grid(row = 2)
+snuts_check.grid(row = 3, columnspan = 1)
+scherry_check.grid(row = 4, columnspan = 2)
+sundae_image.grid(row = 5, column = 0)
+
+#milkshake frame
+size_label.grid(row = 1, column = 0)
+size_combobox.grid(row = 2, column = 0)
+flavor_label.grid(row = 3, column = 0)
+flavor_combobox.grid(row = 4, column = 0)
+mwhip_check.grid(row = 5, columnspan = 1)
+mnuts_check.grid(row = 6, columnspan = 1)
+mcherry_check.grid(row = 7, columnspan = 1)
+
+
+#back to root window
+submit_button.grid(row = 7, columnspan = 3)
+restart_button.grid(row = 7, column = 1)
+exit_button.grid(row = 7, column = 4)
+output_text.grid(row = 8, columnspan = 8)
